@@ -1,0 +1,43 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "tauri-timer-countdown",
+  "version": "0.1.0",
+  "identifier": "com.tauri-timer-countdown.app",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "bun run dev",
+    "beforeBuildCommand": "bun run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Tauri Timer Countdown",
+        "resizable": true,
+        "fullscreen": false,
+        "width": 800,
+        "height": 600,
+        "minHeight": 360,
+        "minWidth": 460,
+        "decorations": false,
+        "alwaysOnTop": true,
+        "transparent": true,
+        "shadow": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}
