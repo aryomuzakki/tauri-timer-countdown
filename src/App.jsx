@@ -1,19 +1,42 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import Countdown from './components/Countdown'
-import { Button, Toast } from './components/ui'
+import '@/App.css'
+import Countdown from '@/components/Countdown'
+import { Button, Toast } from '@/components/ui'
 import { toast } from 'sonner'
-import { IconExpand45, IconMinus, IconX } from 'justd-icons'
-import { getCurrentWindow } from '@tauri-apps/api/window'
+import TitleBar from '@/components/layout/TitleBar'
+import { isTauriDesktop, isWeb } from '@/utils/isTauri'
+import WebHeader from './components/layout/WebHeader'
+import { getTimeFromSeconds } from './utils/time'
+import { TimeNumberField } from './components/TimeNumberField'
 
 function App() {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [isFinish, setIsFinish] = useState(false)
-  const [totalSeconds, setTotalSeconds] = useState(60)
+  const DEFAULT_TOTALSECONDS = 60;
 
-  const appWindow = getCurrentWindow();
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [isFinish, setIsFinish] = useState(null)
+  const [initialSeconds, setInitialSeconds] = useState(DEFAULT_TOTALSECONDS)
+  const [totalSeconds, setTotalSeconds] = useState(initialSeconds)
+
+  const { hours: tHours, minutes: tMinutes, seconds: tSeconds } = getTimeFromSeconds(initialSeconds);
+
+  const hoursChange = (hourVal) => {
+    const newTotalSeconds = hourVal * 60 * 60 + tMinutes * 60 + tSeconds;
+    if (newTotalSeconds < 0) return;
+    setInitialSeconds(newTotalSeconds);
+    setTotalSeconds(newTotalSeconds);
+  }
+  const minutesChange = (min) => {
+    const newTotalSeconds = tHours * 60 * 60 + min * 60 + tSeconds;
+    if (newTotalSeconds < 0) return;
+    setInitialSeconds(newTotalSeconds);
+    setTotalSeconds(newTotalSeconds);
+  }
+  const secondsChange = (sec) => {
+    const newTotalSeconds = tHours * 60 * 60 + tMinutes * 60 + sec;
+    if (newTotalSeconds < 0) return;
+    setInitialSeconds(newTotalSeconds);
+    setTotalSeconds(newTotalSeconds);
+  }
 
   return (
     <>
@@ -23,95 +46,75 @@ function App() {
 
         <div data-tauri-drag-region className="relative flex h-full w-full flex-col justify-between">
 
-          <div data-tauri-drag-region className="w-full flex justify-between items-center border-b">
-            <div className="flex items-center space-x-2 pl-4 select-none">
-              <a href="https://vite.dev" className="" target="_blank">
-                <img src={viteLogo} className="h-4 hover:shadow-f" alt="Vite logo" />
-              </a>
-              <a href="https://react.dev" className="" target="_blank">
-                <img src={reactLogo} className="h-4 hover:shadow-f react" alt="React logo" />
-              </a>
-              <h1 data-tauri-drag-region className="font-semibold text-primary-fg/50 uppercase select-none">Timer Countdown</h1>
-            </div>
+          {isTauriDesktop && <TitleBar />}
+          {isWeb && <WebHeader />}
 
-            <div className="flex">
-              <Button
-                className="size-8 max-sm:*:data-[slot=icon]:size-3.5 px-5 m-0 rounded-none"
-                appearance="plain"
-
-                onPress={async () => {
-                  console.log("pressed minimize");
-
-                  try {
-                    await appWindow.minimize()
-                  } catch (error) {
-                    console.log(error.message);
-                  }
-                }}
-              >
-                <IconMinus className="" />
-              </Button>
-              <Button
-                className="size-8 max-sm:*:data-[slot=icon]:size-3.5 px-5 m-0 rounded-none"
-                appearance="plain"
-
-                onPress={async () => {
-                  console.log("pressed maximize toggle");
-
-                  try {
-                    await appWindow.toggleMaximize()
-                  } catch (error) {
-                    console.log(error.message);
-                  }
-                }}
-              >
-                <IconExpand45 className="" />
-              </Button>
-              <Button
-                className="size-8 max-sm:*:data-[slot=icon]:size-3.5 px-5 m-0 rounded-none"
-                appearance="plain"
-                intent="danger"
-                onPress={async () => {
-                  console.log("pressed close");
-
-                  try {
-                    await appWindow.close()
-                  } catch (error) {
-                    console.log(error.message);
-                  }
-                }}
-              >
-                <IconX className="" />
-              </Button>
-            </div>
-          </div>
-
-          <div data-tauri-drag-region className="border rounded-xs w-max my-4 mx-auto px-8 pb-2 pointer-events-none">
+          <div data-tauri-drag-region className="border rounded-xs w-max my-4 mx-auto px-8 pb-2 pointer-events-none select-none">
             <Countdown
+              initialSeconds={initialSeconds}
               totalSeconds={totalSeconds}
               setTotalSeconds={setTotalSeconds}
               isPlaying={isPlaying}
               setIsFinish={setIsFinish}
               onFinish={() => {
-                setIsPlaying(false)
-                toast("Time's Up", { position: "top-center", });
+                setIsPlaying(false);
+                toast.error("Time's Up", { position: "top-center", });
               }}
             />
           </div>
 
-          <div data-tauri-drag-region className="w-full space-x-4 flex justify-center pb-4 select-none">
-            <Button size="extra-small" appearance="outline" className="rounded-xs uppercase tracking-wider" onPress={() => {
-              setIsPlaying(!isPlaying)
-            }}>
-              {isPlaying ? "Pause" : "Start"}
-            </Button>
-            {!isPlaying && (
-              <Button size="extra-small" appearance="outline" className="rounded-xs uppercase tracking-wider" onPress={() => {
-                setTotalSeconds(60);
-              }}>
+          <div data-tauri-drag-region className="w-full gap-x-8 gap-y-4 flex flex-col md:flex-row justify-center items-center pb-4 select-none">
+            <div className="flex space-x-4">
+
+              <Button
+                size="small"
+                appearance="outline"
+                className="rounded-sm uppercase tracking-wider w-20 px-0"
+                onPress={() => {
+                  setIsPlaying(!isPlaying)
+                }}
+                {...totalSeconds < 2 ? { isDisabled: true } : {}}
+              >
+                {isPlaying ? "Pause" : (totalSeconds < 2 || !(totalSeconds < initialSeconds)) ? "Start" : "Resume"}
+              </Button>
+              <Button
+                size="small"
+                appearance="outline"
+                className="rounded-sm uppercase tracking-wider"
+                onPress={() => {
+                  setIsFinish(null);
+                  setTotalSeconds(initialSeconds);
+                }}
+                {...isPlaying ? { isDisabled: true } : {}}
+              >
                 Reset
               </Button>
-            )}
+            </div>
+
+            <div className="flex space-x-2">
+              <TimeNumberField
+                aria-label="set hours"
+                className=""
+                value={tHours}
+                onChange={hoursChange}
+                {...(isPlaying || (totalSeconds < initialSeconds)) ? { isDisabled: true } : {}}
+              />
+              <TimeNumberField
+                aria-label="set minutes"
+                className=""
+                value={tMinutes}
+                onChange={minutesChange}
+                {...(isPlaying || (totalSeconds < initialSeconds)) ? { isDisabled: true } : {}}
+              />
+              <TimeNumberField
+                aria-label="set seconds"
+                className=""
+                value={tSeconds}
+                onChange={secondsChange}
+                {...(isPlaying || (totalSeconds < initialSeconds)) ? { isDisabled: true } : {}}
+              />
+            </div>
+
           </div>
         </div>
       </div>
