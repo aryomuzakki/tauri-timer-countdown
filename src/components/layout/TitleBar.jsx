@@ -1,8 +1,8 @@
-import reactLogo from '@/assets/react.svg'
-import viteLogo from '/vite.svg'
+import timerLogo from '@/assets/img/timer-countdown-logo.png'
 import { Button } from '@/components/ui';
 import { IconExpand45, IconMinus, IconX } from 'justd-icons'
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import AppMenu from '@/components/AppMenu';
 
 const TitleBar = () => {
 
@@ -11,12 +11,13 @@ const TitleBar = () => {
   return (
     <>
       <div data-tauri-drag-region className="w-full flex justify-between items-center border-b">
-        <div className="flex items-center space-x-2 pl-4 select-none">
-          <a href="https://vite.dev" className="" target="_blank">
-            <img src={viteLogo} className="h-4 hover:shadow-f" alt="Vite logo" />
-          </a>
-          <a href="https://react.dev" className="" target="_blank">
-            <img src={reactLogo} className="h-4 hover:shadow-f react" alt="React logo" />
+        <div className="select-none">
+          <AppMenu />
+        </div>
+        
+        <div className="flex items-center space-x-2 select-none">
+          <a href="https://timer-muzakki.vercel.app" className="" target="_blank">
+            <img src={timerLogo} className="h-4" alt="" />
           </a>
           <h1 data-tauri-drag-region className="font-semibold text-primary-fg/50 uppercase select-none">Timer Countdown</h1>
         </div>
@@ -27,12 +28,10 @@ const TitleBar = () => {
             appearance="plain"
 
             onPress={async () => {
-              console.log("pressed minimize");
-
               try {
                 await appWindow.minimize()
               } catch (error) {
-                console.log(error.message);
+                console.error(error.message);
               }
             }}
           >
@@ -43,12 +42,10 @@ const TitleBar = () => {
             appearance="plain"
 
             onPress={async () => {
-              console.log("pressed maximize toggle");
-
               try {
                 await appWindow.toggleMaximize()
               } catch (error) {
-                console.log(error.message);
+                console.error(error.message);
               }
             }}
           >
@@ -59,12 +56,10 @@ const TitleBar = () => {
             appearance="plain"
             intent="danger"
             onPress={async () => {
-              console.log("pressed close");
-
               try {
                 await appWindow.close()
               } catch (error) {
-                console.log(error.message);
+                console.error(error.message);
               }
             }}
           >

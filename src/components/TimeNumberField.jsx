@@ -11,6 +11,7 @@ import { tv } from "tailwind-variants"
 import { useMediaQuery } from "@/utils/use-media-query"
 import { Description, FieldError, FieldGroup, Input, Label } from "@/components/ui/field"
 import { composeTailwindRenderProps } from "@/components/ui/primitive"
+import { isTauriDesktop } from "@/utils/isTauri"
 
 const fieldBorderStyles = tv({
   base: "group-data-focused:border-primary/70 forced-colors:border-[Highlight]",
@@ -28,7 +29,7 @@ const numberFieldStyles = tv({
   slots: {
     base: "group flex flex-col gap-y-1.5",
     stepperButton:
-      "ml-0! max-md:h-10! h-10 cursor-default px-3 text-muted-fg data-pressed:bg-primary data-pressed:text-primary-fg group-data-disabled:bg-secondary/70 forced-colors:group-data-disabled:text-[GrayText]",
+      "h-10 cursor-default px-3 text-muted-fg data-pressed:bg-primary data-pressed:text-primary-fg group-data-disabled:bg-secondary/70 forced-colors:group-data-disabled:text-[GrayText]",
   },
 })
 
@@ -49,15 +50,15 @@ const TimeNumberField = ({
   errorMessage,
   ...props
 }) => {
-  const isMobile = useMediaQuery("(max-width: 768px)")
+  const isMobile = useMediaQuery("(max-width: 640px)") && !isTauriDesktop;
   return (
     <NumberFieldPrimitive {...props} className={composeTailwindRenderProps(className, base())}>
       {label && <Label>{label}</Label>}
-      <FieldGroup className="overflow-hidden w-32 md:w-16">
+      <FieldGroup className={`overflow-hidden ${isMobile ? "w-32" : "w-16"}`}>
         {(renderProps) => (
           <>
-            {isMobile ? <StepperButton slot="decrement" className="border-r" /> : null}
-            <Input className="tabular-nums pl-13 pr-3.5! md:pr-0! md:px-2.5 text-center md:text-left" placeholder={placeholder} min="0" />
+            {isMobile ? <StepperButton slot="decrement" className="border-r ml-0! h-10!" /> : null}
+            <Input className={`tabular-nums ${isMobile ? "pl-13 pr-3.5! text-center" : "pr-0! px-2.5 text-left"}  `} placeholder={placeholder} min="0" />
             <div
               className={fieldBorderStyles({
                 ...renderProps,

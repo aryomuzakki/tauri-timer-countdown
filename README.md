@@ -2,11 +2,10 @@
 
 Run a timer countdown with costumizable theme (color, font, etc), animated or not.
 
-- [x] One Minute Timer
-- [ ] Set Time
+- [x] Adjust Time Freely (hours, minutes, seconds)
+- [x] Toggle Always on top
 - [ ] Costumizable Theme / Set Theme
 - [ ] Toggle Animate
-- [ ] Toggle Always on top
 
 ## Tauri + React + Vite + Bun
 

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import '@/App.css'
 import Countdown from '@/components/Countdown'
 import { Button, Toast } from '@/components/ui'
@@ -20,22 +20,40 @@ function App() {
   const { hours: tHours, minutes: tMinutes, seconds: tSeconds } = getTimeFromSeconds(initialSeconds);
 
   const hoursChange = (hourVal) => {
-    const newTotalSeconds = hourVal * 60 * 60 + tMinutes * 60 + tSeconds;
+    const newTotalSeconds = (hourVal * 60 * 60 + tMinutes * 60 + tSeconds) || 0;
     if (newTotalSeconds < 0) return;
+    if (newTotalSeconds > (1000 * 60 * 60) - 1) return;
     setInitialSeconds(newTotalSeconds);
     setTotalSeconds(newTotalSeconds);
   }
   const minutesChange = (min) => {
-    const newTotalSeconds = tHours * 60 * 60 + min * 60 + tSeconds;
+    const newTotalSeconds = (tHours * 60 * 60 + min * 60 + tSeconds) || 0;
     if (newTotalSeconds < 0) return;
+    if (newTotalSeconds > (1000 * 60 * 60) - 1) return;
     setInitialSeconds(newTotalSeconds);
     setTotalSeconds(newTotalSeconds);
   }
   const secondsChange = (sec) => {
-    const newTotalSeconds = tHours * 60 * 60 + tMinutes * 60 + sec;
+    const newTotalSeconds = (tHours * 60 * 60 + tMinutes * 60 + sec) || 0;
     if (newTotalSeconds < 0) return;
+    if (newTotalSeconds > (1000 * 60 * 60) - 1) return;
     setInitialSeconds(newTotalSeconds);
     setTotalSeconds(newTotalSeconds);
+  }
+
+  if (isTauriDesktop) {
+    useEffect(() => {
+      const disableContextMenu = (ev) => {
+        ev.preventDefault();
+        document.getElementById("context-menu-btn").click();
+      }
+      document.addEventListener('contextmenu', disableContextMenu);
+
+      return () => {
+        document.removeEventListener('contextmenu', disableContextMenu);
+      }
+    }, [])
+
   }
 
   return (
@@ -63,15 +81,16 @@ function App() {
             />
           </div>
 
-          <div data-tauri-drag-region className="w-full gap-x-8 gap-y-4 flex flex-col md:flex-row justify-center items-center pb-4 select-none">
+          <div data-tauri-drag-region className="w-full gap-x-8 gap-y-4 flex flex-col sm:flex-row justify-center items-center pb-4 select-none">
             <div className="flex space-x-4">
 
               <Button
                 size="small"
                 appearance="outline"
-                className="rounded-sm uppercase tracking-wider w-20 px-0"
+                className="disabled:opacity-15 opacity-40 not-disabled:hover:opacity-100 transition rounded-sm uppercase tracking-wider w-20 px-0"
                 onPress={() => {
                   setIsPlaying(!isPlaying)
+                  toast.dismiss();
                 }}
                 {...totalSeconds < 2 ? { isDisabled: true } : {}}
               >
@@ -80,7 +99,7 @@ function App() {
               <Button
                 size="small"
                 appearance="outline"
-                className="rounded-sm uppercase tracking-wider"
+                className="disabled:opacity-15 opacity-40 not-disabled:hover:opacity-100 transition rounded-sm uppercase tracking-wider"
                 onPress={() => {
                   setIsFinish(null);
                   setTotalSeconds(initialSeconds);
@@ -91,24 +110,24 @@ function App() {
               </Button>
             </div>
 
-            <div className="flex space-x-2">
+            <div className={`flex space-x-2  ${isPlaying || (totalSeconds < initialSeconds) ? "opacity" : ""}`}>
               <TimeNumberField
                 aria-label="set hours"
-                className=""
+                className="transition not-disabled:opacity-40 not-disabled:has-focus:opacity-100 not-disabled:hover:opacity-100 has-disabled:opacity-0 has-disabled:hover:opacity-0"
                 value={tHours}
                 onChange={hoursChange}
                 {...(isPlaying || (totalSeconds < initialSeconds)) ? { isDisabled: true } : {}}
               />
               <TimeNumberField
                 aria-label="set minutes"
-                className=""
+                className="transition not-disabled:opacity-40 not-disabled:has-focus:opacity-100 not-disabled:hover:opacity-100 has-disabled:opacity-0 has-disabled:hover:opacity-0"
                 value={tMinutes}
                 onChange={minutesChange}
                 {...(isPlaying || (totalSeconds < initialSeconds)) ? { isDisabled: true } : {}}
               />
               <TimeNumberField
                 aria-label="set seconds"
-                className=""
+                className="transition not-disabled:opacity-40 not-disabled:has-focus:opacity-100 not-disabled:hover:opacity-100 has-disabled:opacity-0 has-disabled:hover:opacity-0"
                 value={tSeconds}
                 onChange={secondsChange}
                 {...(isPlaying || (totalSeconds < initialSeconds)) ? { isDisabled: true } : {}}

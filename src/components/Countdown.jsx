@@ -39,15 +39,13 @@ const Countdown = ({
   }, [isPlaying])
 
   return (
-    <div className={`${iHours > 0 ? "text-7xl" : "text-9xl"} w-96 h-48 font-bold flex items-center justify-center overflow-hidden`}>
-      {iHours > 0 && (
-        <>
-          <NumberFlow value={hours} format={{ minimumIntegerDigits: 2 }} className="mx-2" />
-          <span className="mb-6">:</span>
-        </>
-      )}
+    <div className={`${iHours > 0 ? "text-7xl" : "text-9xl"} transition-[font] ease-linear duration-500 w-96 h-48 font-bold flex items-center justify-center overflow-hidden`}>
+      <div className={`${iHours > 0 ? "opacity-100" : "opacity-0 w-0"} transition-[width] flex items-center`}>
+        <NumberFlow value={hours} format={{ minimumIntegerDigits: 2 }} className="mx-2" />
+        <span className="mb-3 ">:</span>
+      </div>
       <NumberFlow value={minutes} format={{ minimumIntegerDigits: 2 }} className="mx-2" />
-      <span className="mb-6">:</span>
+      <span className="mb-3 ">:</span>
       <NumberFlow value={seconds} format={{ minimumIntegerDigits: 2 }} className="mx-2" />
     </div>
   )
