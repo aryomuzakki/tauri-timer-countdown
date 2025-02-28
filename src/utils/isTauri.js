@@ -1,4 +1,6 @@
-const isTauri = '__TAURI_INTERNALS__' in window; // v2 checking
+import { isTauri as isTauriCore } from "@tauri-apps/api/core";
+
+const isTauri = isTauriCore() ; // v2 checking // update
 export default isTauri; // running on a desktop app or a mobile app - but not in the browser
 export const isWeb = !isTauri; // running on the browser on either desktop or mobile - but not as a tauri app
 

@@ -4,7 +4,7 @@ import Countdown from '@/components/Countdown'
 import { Button, Toast } from '@/components/ui'
 import { toast } from 'sonner'
 import TitleBar from '@/components/layout/TitleBar'
-import { isTauriDesktop, isWeb } from '@/utils/isTauri'
+import { isTauriDesktop, isTauriMobile, isWeb } from '@/utils/isTauri'
 import WebHeader from './components/layout/WebHeader'
 import { getTimeFromSeconds } from './utils/time'
 import { TimeNumberField } from './components/TimeNumberField'
@@ -60,14 +60,14 @@ function App() {
     <>
       <Toast duration={Infinity} />
 
-      <div data-tauri-drag-region className="relative w-full h-dvh overflow-hidden">
+      <div {...isTauriDesktop ? { "data-tauri-drag-region": "true" } : {}} className="relative w-full h-dvh overflow-hidden">
 
-        <div data-tauri-drag-region className="relative flex h-full w-full flex-col justify-between">
+        <div {...isTauriDesktop ? { "data-tauri-drag-region": "true" } : {}} className="relative flex h-full w-full flex-col justify-between">
 
           {isTauriDesktop && <TitleBar />}
-          {isWeb && <WebHeader />}
+          {(isWeb || isTauriMobile) && <WebHeader />}
 
-          <div data-tauri-drag-region className="border rounded-xs w-max my-4 mx-auto px-8 pb-2 pointer-events-none select-none">
+          <div {...isTauriDesktop ? { "data-tauri-drag-region": "true" } : {}} className="border rounded-xs w-max my-4 mx-auto px-4 sm:px-8 pb-2 pointer-events-none select-none">
             <Countdown
               initialSeconds={initialSeconds}
               totalSeconds={totalSeconds}
@@ -81,7 +81,7 @@ function App() {
             />
           </div>
 
-          <div data-tauri-drag-region className="w-full gap-x-8 gap-y-4 flex flex-col sm:flex-row justify-center items-center pb-4 select-none">
+          <div {...isTauriDesktop ? { "data-tauri-drag-region": "true" } : {}} className="w-full gap-x-8 gap-y-4 flex flex-col sm:flex-row justify-center items-center pb-4 select-none">
             <div className="flex space-x-4">
 
               <Button

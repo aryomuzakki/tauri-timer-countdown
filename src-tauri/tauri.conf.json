@@ -1,6 +1,6 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "timer-countdown",
+  "productName": "Timer Countdown",
   "version": "0.2.0",
   "identifier": "com.timer-countdown.app",
   "build": {
@@ -38,6 +38,9 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "android": {
+      "minSdkVersion": 24
+    }
   }
 }
